@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net4.7.2</TargetFramework>
+		<LangVersion>Latest</LangVersion>
+		<AssemblyName Condition="'$(Configuration)'=='Debug'">TabExtension-debug</AssemblyName>
+		<AssemblyName Condition="'$(Configuration)'=='Release'">TabExtension</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>..\Libs\Assembly-CSharp.dll</HintPath>
+		</Reference>
+		<Reference Include="Assembly-CSharp-firstpass">
+			<HintPath>..\Libs\Assembly-CSharp-firstpass.dll</HintPath>
+		</Reference>
+		<Reference Include="Il2Cppmscorlib">
+			<HintPath>..\Libs\Il2Cppmscorlib.dll</HintPath>
+		</Reference>
+		<Reference Include="Il2CppSystem">
+			<HintPath>..\Libs\Il2CppSystem.dll</HintPath>
+		</Reference>
+		<Reference Include="Il2CppSystem.Core">
+			<HintPath>..\Libs\Il2CppSystem.Core.dll</HintPath>
+		</Reference>
+		<Reference Include="MelonLoader">
+			<HintPath>..\Libs\MelonLoader.dll</HintPath>
+		</Reference>
+		<Reference Include="UnhollowerBaseLib">
+			<HintPath>..\Libs\UnhollowerBaseLib.dll</HintPath>
+		</Reference>
+		<Reference Include="UnhollowerRuntimeLib">
+			<HintPath>..\Libs\UnhollowerRuntimeLib.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>..\Libs\UnityEngine.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>..\Libs\UnityEngine.CoreModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.PhysicsModule">
+			<HintPath>..\Libs\UnityEngine.PhysicsModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UI">
+			<HintPath>..\Libs\UnityEngine.UI.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+</Project>
