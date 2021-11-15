@@ -18,7 +18,6 @@ namespace TabExtension
 
         public static TabExtensionMod Instance { get; private set; }
 
-
         public override void OnApplicationStart()
         {
             Instance = this;

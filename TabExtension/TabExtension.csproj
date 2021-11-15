@@ -44,6 +44,9 @@
 		<Reference Include="UnityEngine.UI">
 			<HintPath>..\Libs\UnityEngine.UI.dll</HintPath>
 		</Reference>
+		<Reference Include="VRC.UI.Core">
+		  <HintPath>..\Libs\VRC.UI.Core.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 </Project>

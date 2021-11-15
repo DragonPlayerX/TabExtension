@@ -6,6 +6,7 @@ using MelonLoader;
 using UnhollowerBaseLib.Attributes;
 using UnityEngine;
 using UnityEngine.UI;
+using VRC.UI.Core.Styles;
 
 namespace TabExtension.UI
 {
@@ -17,8 +18,11 @@ namespace TabExtension.UI
         private GameObject quickMenu;
         private GameObject layout;
         private RectTransform tooltipRect;
+        private RectTransform backgroundRect;
         private BoxCollider menuCollider;
         private List<RectTransform> uixObjects;
+
+        private bool useStyletor;
 
         public TabLayout(IntPtr value) : base(value)
         {
@@ -30,18 +34,21 @@ namespace TabExtension.UI
 
             GameObject background = quickMenu.transform.Find("Container/Window/Page_Buttons_QM/HorizontalLayoutGroup/Background_QM_PagePanel").gameObject;
             background.SetActive(true);
-            background.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -64);
-            background.GetComponent<RectTransform>().sizeDelta = new Vector2(950, 128);
+
+            if (MelonHandler.Mods.Any(mod => mod.Info.Name.Equals("Styletor")))
+            {
+                useStyletor = true;
+                StyleElement styleElement = background.GetComponent<StyleElement>();
+                styleElement.field_Public_String_1 = "TabBottom";
+            }
+
             Image image = background.GetComponent<Image>();
             image.sprite = transform.Find("Page_Dashboard/Background").GetComponent<Image>().sprite;
-            image.color = new Color(1, 1, 1, 0.5f);
+            image.color = new Color(1, 1, 1, 0.6f);
 
-            /*Instantiate(transform.Find("Page_Dashboard"), transform);
-            Instantiate(transform.Find("Page_Dashboard"), transform);
-            Instantiate(transform.Find("Page_Dashboard"), transform);
-            Instantiate(transform.Find("Page_Dashboard"), transform);
-            Instantiate(transform.Find("Page_Dashboard"), transform);
-            Instantiate(transform.Find("Page_Dashboard"), transform);*/
+            backgroundRect = background.GetComponent<RectTransform>();
+            backgroundRect.anchoredPosition = new Vector2(0, -64);
+            backgroundRect.sizeDelta = new Vector2(950, 128);
         }
 
         internal void OnEnable() => MelonCoroutines.Start(RecalculateLayout());
@@ -69,8 +76,14 @@ namespace TabExtension.UI
 
                 foreach (var t in transform)
                 {
-                    t.Cast<Transform>().gameObject.AddComponent<LayoutListener>().OnLayoutUpdateRequested += new Action(() => MelonCoroutines.Start(RecalculateLayout()));
+                    Transform child = t.Cast<Transform>();
+
+                    if (child.gameObject.name != "Background_QM_PagePanel")
+                        child.gameObject.AddComponent<LayoutListener>().OnLayoutUpdateRequested += new Action(() => MelonCoroutines.Start(RecalculateLayout()));
                 }
+
+                if (useStyletor)
+                    MelonCoroutines.Start(UpdateBackgroundLater());
             }
 
             List<Transform> childs = new List<Transform>();
@@ -107,6 +120,21 @@ namespace TabExtension.UI
 
             foreach (RectTransform transform in uixObjects)
                 transform.anchoredPosition = new Vector2(transform.anchoredPosition.x, -(((childs.Count - 1) / TabsPerRow) * (128 / 3)));
+
+            if (useStyletor)
+            {
+                yield return null;
+                backgroundRect.anchoredPosition = new Vector2(0, -64);
+                backgroundRect.sizeDelta = new Vector2(950, 128);
+            }
+        }
+
+        [method: HideFromIl2Cpp]
+        public IEnumerator UpdateBackgroundLater()
+        {
+            yield return new WaitForSeconds(5);
+            backgroundRect.anchoredPosition = new Vector2(0, -64);
+            backgroundRect.sizeDelta = new Vector2(950, 128);
         }
     }
 }
