@@ -70,8 +70,13 @@ namespace TabExtension.UI
 
             if (menuCollider == null)
             {
-                // Wait one frame to avoid BoxCollider == null
+                // Wait to avoid BoxCollider == null 
                 yield return null;
+
+                // Extra wait for late initialized tabs
+                yield return null;
+                yield return null;
+
                 menuCollider = quickMenu.transform.Find("Container/Window/Page_Buttons_QM").GetComponent<BoxCollider>();
 
                 foreach (var t in transform)
@@ -93,7 +98,12 @@ namespace TabExtension.UI
                 var t = transform.GetChild(i);
                 Transform child = t.Cast<Transform>();
                 if (child.gameObject.activeSelf && child.gameObject.name != "Background_QM_PagePanel")
+                {
+                    if (child.GetComponent<LayoutListener>() == null)
+                        child.gameObject.AddComponent<LayoutListener>().OnLayoutUpdateRequested += new Action(() => MelonCoroutines.Start(RecalculateLayout()));
+
                     childs.Add(child);
+                }
             }
 
             int pivotX = 0;
