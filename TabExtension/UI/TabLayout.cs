@@ -15,6 +15,8 @@ namespace TabExtension.UI
 
         private static readonly int TabsPerRow = 7;
 
+        public static TabLayout Instance;
+
         private GameObject quickMenu;
         private GameObject layout;
         private RectTransform tooltipRect;
@@ -26,6 +28,7 @@ namespace TabExtension.UI
 
         public TabLayout(IntPtr value) : base(value)
         {
+            Instance = this;
             quickMenu = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)").gameObject;
             layout = quickMenu.transform.Find("Container/Window/Page_Buttons_QM/HorizontalLayoutGroup").gameObject;
             tooltipRect = quickMenu.transform.Find("Container/Window/ToolTipPanel").GetComponent<RectTransform>();
@@ -84,7 +87,7 @@ namespace TabExtension.UI
                     Transform child = t.Cast<Transform>();
 
                     if (child.gameObject.name != "Background_QM_PagePanel")
-                        child.gameObject.AddComponent<LayoutListener>().OnLayoutUpdateRequested += new Action(() => MelonCoroutines.Start(RecalculateLayout()));
+                        child.gameObject.AddComponent<LayoutListener>();
                 }
 
                 if (useStyletor)
@@ -97,13 +100,9 @@ namespace TabExtension.UI
             {
                 var t = transform.GetChild(i);
                 Transform child = t.Cast<Transform>();
-                if (child.gameObject.activeSelf && child.gameObject.name != "Background_QM_PagePanel")
-                {
-                    if (child.GetComponent<LayoutListener>() == null)
-                        child.gameObject.AddComponent<LayoutListener>().OnLayoutUpdateRequested += new Action(() => MelonCoroutines.Start(RecalculateLayout()));
 
+                if (child.gameObject.activeSelf && child.gameObject.name != "Background_QM_PagePanel")
                     childs.Add(child);
-                }
             }
 
             int pivotX = 0;
@@ -140,7 +139,7 @@ namespace TabExtension.UI
         }
 
         [method: HideFromIl2Cpp]
-        public IEnumerator UpdateBackgroundLater()
+        private IEnumerator UpdateBackgroundLater()
         {
             yield return new WaitForSeconds(5);
             backgroundRect.anchoredPosition = new Vector2(0, -64);
