@@ -45,10 +45,10 @@
 			<HintPath>..\Libs\UnityEngine.UI.dll</HintPath>
 		</Reference>
 		<Reference Include="VRC.UI.Core">
-		  <HintPath>..\Libs\VRC.UI.Core.dll</HintPath>
+			<HintPath>..\Libs\VRC.UI.Core.dll</HintPath>
 		</Reference>
 		<Reference Include="VRC.UI.Elements">
-		  <HintPath>..\Libs\VRC.UI.Elements.dll</HintPath>
+			<HintPath>..\Libs\VRC.UI.Elements.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
