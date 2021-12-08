@@ -3,10 +3,15 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using MelonLoader;
+using UnhollowerBaseLib;
 using UnhollowerBaseLib.Attributes;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.UI.Core.Styles;
+using VRC.UI.Elements;
+using VRC.UI.Elements.Controls;
+
+using TabExtension.Config;
 
 namespace TabExtension.UI
 {
@@ -24,11 +29,38 @@ namespace TabExtension.UI
         private BoxCollider menuCollider;
         private List<RectTransform> uixObjects;
 
+        private Dictionary<string, int> tabSorting;
+        private List<string> defaultSorting;
+        private MenuStateController menuStateController;
+
         private bool useStyletor;
 
         public TabLayout(IntPtr value) : base(value)
         {
             Instance = this;
+
+            tabSorting = Configuration.Load();
+
+            if (tabSorting == null)
+                tabSorting = new Dictionary<string, int>();
+
+            Configuration.TabSorting.OnValueChanged += new Action<bool, bool>((oldValue, newValue) =>
+            {
+                if (newValue)
+                {
+                    tabSorting = Configuration.Load();
+
+                    if (tabSorting == null)
+                        tabSorting = new Dictionary<string, int>();
+
+                    ApplySorting();
+                }
+                else
+                {
+                    ApplySorting(true);
+                }
+            });
+
             quickMenu = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)").gameObject;
             layout = quickMenu.transform.Find("Container/Window/Page_Buttons_QM/HorizontalLayoutGroup").gameObject;
             tooltipRect = quickMenu.transform.Find("Container/Window/ToolTipPanel").GetComponent<RectTransform>();
@@ -36,7 +68,8 @@ namespace TabExtension.UI
             DestroyImmediate(layout.GetComponent<HorizontalLayoutGroup>());
 
             GameObject background = quickMenu.transform.Find("Container/Window/Page_Buttons_QM/HorizontalLayoutGroup/Background_QM_PagePanel").gameObject;
-            background.SetActive(true);
+            background.SetActive(Configuration.TabBackground.Value);
+            Configuration.TabBackground.OnValueChanged += new Action<bool, bool>((oldValue, newValue) => background.SetActive(newValue));
 
             if (MelonHandler.Mods.Any(mod => mod.Info.Name.Equals("Styletor")))
             {
@@ -52,6 +85,8 @@ namespace TabExtension.UI
             backgroundRect = background.GetComponent<RectTransform>();
             backgroundRect.anchoredPosition = new Vector2(0, -64);
             backgroundRect.sizeDelta = new Vector2(950, 128);
+
+            menuStateController = quickMenu.GetComponent<MenuStateController>();
         }
 
         internal void OnEnable() => MelonCoroutines.Start(RecalculateLayout());
@@ -136,6 +171,78 @@ namespace TabExtension.UI
                 backgroundRect.anchoredPosition = new Vector2(0, -64);
                 backgroundRect.sizeDelta = new Vector2(950, 128);
             }
+        }
+
+        [method: HideFromIl2Cpp]
+        public void ApplySorting(bool applyDefault = false)
+        {
+            if (!applyDefault && !Configuration.TabSorting.Value)
+                return;
+
+            Dictionary<string, ValueTuple<Transform, UIPage>> tabs = new Dictionary<string, ValueTuple<Transform, UIPage>>();
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var t = transform.GetChild(i);
+                Transform child = t.Cast<Transform>();
+
+                if (child.gameObject.name != "Background_QM_PagePanel")
+                {
+                    UIPage uiPage = menuStateController.field_Private_Dictionary_2_String_UIPage_0[child.gameObject.GetComponent<MenuTab>().field_Public_String_0];
+                    tabs.Add(uiPage.field_Public_String_0, ValueTuple.Create(child, uiPage));
+                }
+            }
+
+            if (defaultSorting == null)
+            {
+                defaultSorting = new List<string>();
+                defaultSorting.AddRange(tabs.Keys);
+            }
+
+            if (tabs.Count > tabSorting.Count)
+            {
+                foreach (string tab in tabs.Keys)
+                {
+                    if (!tabSorting.ContainsKey(tab))
+                        tabSorting.Add(tab, tabSorting.Count + 1);
+                }
+
+                Configuration.Save(tabSorting);
+            }
+
+            List<string> sorting = applyDefault ? defaultSorting : tabSorting.OrderBy(x => x.Value).ToDictionary(k => k.Key, v => v.Value).Keys.ToList();
+
+            for (int i = 0; i < sorting.Count; i++)
+            {
+                if (tabs.ContainsKey(sorting[i]))
+                {
+                    if (sorting[i].Equals("QuickMenuDashboard"))
+                        menuStateController.field_Private_Int32_0 = i;
+
+                    tabs[sorting[i]].Item1.SetSiblingIndex(i + 1);
+                    SetPageIndex(tabs[sorting[i]].Item2, i);
+                }
+            }
+        }
+
+        [method: HideFromIl2Cpp]
+        private void SetPageIndex(UIPage uiPage, int index)
+        {
+            Il2CppReferenceArray<UIPage> pages = menuStateController.field_Public_ArrayOf_UIPage_0;
+
+            for (int i = 0; i < pages.Count; i++)
+            {
+                if (pages[i].Equals(uiPage))
+                    Switch(pages, i, index);
+            }
+        }
+
+        [method: HideFromIl2Cpp]
+        private static void Switch<T>(IList<T> array, int index, int newIndex)
+        {
+            T obj = array[index];
+            array[index] = array[newIndex];
+            array[newIndex] = obj;
         }
 
         [method: HideFromIl2Cpp]

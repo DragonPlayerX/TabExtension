@@ -1,6 +1,5 @@
 ﻿using System;
 using MelonLoader;
-using UnhollowerBaseLib.Attributes;
 using UnityEngine;
 
 namespace TabExtension.UI
@@ -10,22 +9,19 @@ namespace TabExtension.UI
 
         private bool lastState;
 
-        [method: HideFromIl2Cpp]
-        public event Action OnLayoutUpdateRequested;
-
         public LayoutListener(IntPtr value) : base(value) { }
 
         internal void Awake()
         {
             lastState = gameObject.activeSelf;
-            OnLayoutUpdateRequested += new Action(() => MelonCoroutines.Start(TabLayout.Instance.RecalculateLayout()));
-            OnLayoutUpdateRequested?.Invoke();
+            MelonCoroutines.Start(TabLayout.Instance.RecalculateLayout());
+            TabLayout.Instance.ApplySorting();
         }
 
         internal void OnEnable()
         {
             if (!lastState)
-                OnLayoutUpdateRequested?.Invoke();
+                MelonCoroutines.Start(TabLayout.Instance.RecalculateLayout());
 
             lastState = gameObject.activeSelf;
         }
@@ -33,7 +29,7 @@ namespace TabExtension.UI
         internal void OnDisable()
         {
             if (lastState && transform.parent.gameObject.activeInHierarchy)
-                OnLayoutUpdateRequested?.Invoke();
+                MelonCoroutines.Start(TabLayout.Instance.RecalculateLayout());
 
             lastState = gameObject.activeSelf;
         }

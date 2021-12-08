@@ -47,6 +47,9 @@
 		<Reference Include="VRC.UI.Core">
 		  <HintPath>..\Libs\VRC.UI.Core.dll</HintPath>
 		</Reference>
+		<Reference Include="VRC.UI.Elements">
+		  <HintPath>..\Libs\VRC.UI.Elements.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 </Project>
