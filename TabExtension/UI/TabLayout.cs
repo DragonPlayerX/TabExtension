@@ -219,9 +219,6 @@ namespace TabExtension.UI
             {
                 if (tabs.ContainsKey(sorting[i]))
                 {
-                    if (sorting[i].Equals("QuickMenuDashboard"))
-                        menuStateController.field_Private_Int32_0 = i;
-
                     tabs[sorting[i]].Item1.SetSiblingIndex(i + 1);
                     SetPageIndex(tabs[sorting[i]].Item2, i);
                 }
