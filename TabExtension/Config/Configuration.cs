@@ -48,7 +48,7 @@ namespace TabExtension.Config
             }
             catch (Exception e)
             {
-                MelonLogger.Error("Error while loading TabSorting.json: " + e.ToString());
+                MelonLogger.Error("Error while loading " + FileName + ": " + e.ToString());
                 return null;
             }
         }

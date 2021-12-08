@@ -199,16 +199,19 @@ namespace TabExtension.UI
                 defaultSorting.AddRange(tabs.Keys);
             }
 
-            if (tabs.Count > tabSorting.Count)
-            {
-                foreach (string tab in tabs.Keys)
-                {
-                    if (!tabSorting.ContainsKey(tab))
-                        tabSorting.Add(tab, tabSorting.Count + 1);
-                }
+            bool added = false;
 
-                Configuration.Save(tabSorting);
+            foreach (string tab in tabs.Keys)
+            {
+                if (!tabSorting.ContainsKey(tab))
+                {
+                    tabSorting.Add(tab, tabSorting.Count + 1);
+                    added = true;
+                }
             }
+
+            if (added)
+                Configuration.Save(tabSorting);
 
             List<string> sorting = applyDefault ? defaultSorting : tabSorting.OrderBy(x => x.Value).ToDictionary(k => k.Key, v => v.Value).Keys.ToList();
 
