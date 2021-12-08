@@ -25,7 +25,7 @@ You can customize the position of all tabs (includes vanilla and mod tabs) with 
 	"QuickMenuSettings": 6,
 	"QuickMenuDevTools": 7,
 	"QuickMenuReModReModCE": 8,
-	"ScreenshotManager_Main": 9,
+	"QuickMenuScreenshotManager": 9,
 	"emmVRC_MainMenu": 10,
 	"QuickMenuFaceTracking": 11
 }
