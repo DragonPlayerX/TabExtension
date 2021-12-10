@@ -35,4 +35,4 @@ You can customize the position of all tabs (includes vanilla and mod tabs) with 
 
 ### Example Screenshot
 
-![Screenshot](https://i.imgur.com/DOi1PS6.png)
+![Screenshot](https://i.imgur.com/6VQ9WyW.png)
