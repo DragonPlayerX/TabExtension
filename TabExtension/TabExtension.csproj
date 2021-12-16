@@ -26,6 +26,9 @@
 		<Reference Include="MelonLoader">
 			<HintPath>..\Libs\MelonLoader.dll</HintPath>
 		</Reference>
+		<Reference Include="UIExpansionKit">
+			<HintPath>..\Libs\UIExpansionKit.dll</HintPath>
+		</Reference>
 		<Reference Include="UnhollowerBaseLib">
 			<HintPath>..\Libs\UnhollowerBaseLib.dll</HintPath>
 		</Reference>

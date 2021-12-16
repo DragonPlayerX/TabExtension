@@ -144,11 +144,18 @@ namespace TabExtension.UI
 
             for (int i = 0; i < childs.Count; i++)
             {
-                int y = (i / TabsPerRow);
+                int y = i / TabsPerRow;
                 int x = i - (y * TabsPerRow);
 
                 if (x == 0)
-                    pivotX = -(((childs.Count - i) >= TabsPerRow ? TabsPerRow : (childs.Count - i)) * 64) + 64;
+                {
+                    if (Configuration.ParsedTabAlignment == Configuration.Alignment.Left)
+                        pivotX = -(TabsPerRow * 64 - (TabsPerRow % 2 * 64));
+                    else if (Configuration.ParsedTabAlignment == Configuration.Alignment.Right)
+                        pivotX = TabsPerRow * 64 + (TabsPerRow % 2 * 64) - (((childs.Count - i) >= TabsPerRow ? TabsPerRow : (childs.Count - i)) * 128);
+                    else
+                        pivotX = -(((childs.Count - i) >= TabsPerRow ? TabsPerRow : (childs.Count - i)) * 64) + 64;
+                }
 
                 if (childs.Count > i)
                 {
@@ -158,12 +165,12 @@ namespace TabExtension.UI
                 }
             }
 
-            menuCollider.size = new Vector3(900, 128 + ((childs.Count - 1) / TabsPerRow) * 128, 1);
-            menuCollider.center = new Vector3(0, -64 - ((childs.Count - 1) / TabsPerRow) * 64, 0);
-            tooltipRect.anchoredPosition = new Vector2(0, -140 - (((childs.Count - 1) / TabsPerRow) * 128));
+            menuCollider.size = new Vector3(900, 128 + (childs.Count - 1) / TabsPerRow * 128, 1);
+            menuCollider.center = new Vector3(0, -64 - (childs.Count - 1) / TabsPerRow * 64, 0);
+            tooltipRect.anchoredPosition = new Vector2(0, -140 - ((childs.Count - 1) / TabsPerRow * 128));
 
             foreach (RectTransform transform in uixObjects)
-                transform.anchoredPosition = new Vector2(transform.anchoredPosition.x, -(((childs.Count - 1) / TabsPerRow) * (128 / 3)));
+                transform.anchoredPosition = new Vector2(transform.anchoredPosition.x, -((childs.Count - 1) / TabsPerRow * (128 / 3)));
 
             if (useStyletor)
             {
