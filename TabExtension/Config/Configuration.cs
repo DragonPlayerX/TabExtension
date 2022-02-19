@@ -55,11 +55,11 @@ namespace TabExtension.Config
             try
             {
                 File.WriteAllText(Path + FileName, Encoder.Encode(tabSorting, EncodeOptions.PrettyPrint));
-                MelonLogger.Msg(FileName + " was saved.");
+                TabExtensionMod.Logger.Msg(FileName + " was saved.");
             }
             catch (Exception e)
             {
-                MelonLogger.Error("Error while saving " + FileName + ": " + e.ToString());
+                TabExtensionMod.Logger.Error("Error while saving " + FileName + ": " + e.ToString());
             }
         }
 
@@ -73,7 +73,7 @@ namespace TabExtension.Config
             }
             catch (Exception e)
             {
-                MelonLogger.Error("Error while loading " + FileName + ": " + e.ToString());
+                TabExtensionMod.Logger.Error("Error while loading " + FileName + ": " + e.ToString());
                 return null;
             }
         }

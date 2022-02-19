@@ -19,11 +19,12 @@ namespace TabExtension
         public static readonly string Version = "1.2.0";
 
         public static TabExtensionMod Instance { get; private set; }
+        public static MelonLogger.Instance Logger => Instance.LoggerInstance;
 
         public override void OnApplicationStart()
         {
             Instance = this;
-            MelonLogger.Msg("Initializing TabExtension " + Version + "...");
+            Logger.Msg("Initializing TabExtension " + Version + "...");
 
             Configuration.Init();
 
@@ -43,7 +44,7 @@ namespace TabExtension
 
             layout.AddComponent<TabLayout>();
 
-            MelonLogger.Msg("Running version " + Version + " of TabExtension.");
+            Logger.Msg("Running version " + Version + " of TabExtension.");
         }
     }
 }
