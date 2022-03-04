@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- [MelonLoader 0.4.x](https://melonwiki.xyz/)
+- [MelonLoader 0.5.x](https://melonwiki.xyz/)
 
 ## Features
 
