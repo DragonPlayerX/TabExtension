@@ -7,7 +7,7 @@ using TabExtension;
 using TabExtension.UI;
 using TabExtension.Config;
 
-[assembly: MelonInfo(typeof(TabExtensionMod), "TabExtension", "1.2.0", "DragonPlayer", "https://github.com/DragonPlayerX/TabExtension")]
+[assembly: MelonInfo(typeof(TabExtensionMod), "TabExtension", "1.2.1", "DragonPlayer", "https://github.com/DragonPlayerX/TabExtension")]
 [assembly: MelonGame("VRChat", "VRChat")]
 [assembly: MelonOptionalDependencies("UIExpansionKit")]
 
@@ -16,7 +16,7 @@ namespace TabExtension
     public class TabExtensionMod : MelonMod
     {
 
-        public static readonly string Version = "1.2.0";
+        public static readonly string Version = "1.2.1";
 
         public static TabExtensionMod Instance { get; private set; }
         public static MelonLogger.Instance Logger => Instance.LoggerInstance;
