@@ -195,8 +195,16 @@ namespace TabExtension.UI
 
                 if (child.gameObject.name != "Background_QM_PagePanel")
                 {
-                    UIPage uiPage = menuStateController.field_Private_Dictionary_2_String_UIPage_0[child.gameObject.GetComponent<MenuTab>().field_Public_String_0];
-                    tabs.Add(uiPage.field_Public_String_0, ValueTuple.Create(child, uiPage));
+                    string pageKey = child.gameObject.GetComponent<MenuTab>()?.field_Public_String_0;
+                    if (menuStateController.field_Private_Dictionary_2_String_UIPage_0.ContainsKey(pageKey))
+                    {
+                        UIPage uiPage = menuStateController.field_Private_Dictionary_2_String_UIPage_0[pageKey];
+                        tabs.Add(uiPage.field_Public_String_0, ValueTuple.Create(child, uiPage));
+                    }
+                    else
+                    {
+                        TabExtensionMod.Logger.Warning("Menu tab \"" + pageKey + "\" has no UIPage.");
+                    }
                 }
             }
 
@@ -222,12 +230,14 @@ namespace TabExtension.UI
 
             List<string> sorting = applyDefault ? defaultSorting : tabSorting.OrderBy(x => x.Value).ToDictionary(k => k.Key, v => v.Value).Keys.ToList();
 
+            int tabIndex = 0;
             for (int i = 0; i < sorting.Count; i++)
             {
                 if (tabs.ContainsKey(sorting[i]))
                 {
-                    tabs[sorting[i]].Item1.SetSiblingIndex(i + 1);
-                    SetPageIndex(tabs[sorting[i]].Item2, i);
+                    tabs[sorting[i]].Item1.SetSiblingIndex(tabIndex + 1);
+                    SetPageIndex(tabs[sorting[i]].Item2, tabIndex);
+                    tabIndex++;
                 }
             }
         }
