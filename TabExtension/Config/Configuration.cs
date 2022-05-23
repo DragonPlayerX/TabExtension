@@ -18,6 +18,7 @@ namespace TabExtension.Config
         public static MelonPreferences_Entry<bool> TabSorting;
         public static MelonPreferences_Entry<bool> TabBackground;
         public static MelonPreferences_Entry<string> TabAlignment;
+        public static MelonPreferences_Entry<int> TabsPerRow;
 
         public static Alignment ParsedTabAlignment;
 
@@ -33,6 +34,7 @@ namespace TabExtension.Config
             TabSorting = Category.CreateEntry("TabSorting", false, "TabSorting (config in UserData)");
             TabBackground = Category.CreateEntry("TabBackground", true, "TabBackground");
             TabAlignment = Category.CreateEntry("TabAlignment", nameof(Alignment.Center), "TabAlignment");
+            TabsPerRow = Category.CreateEntry("TabsPerRow", 7, "TabsPerRow");
 
             Action<string> parseAlignmentAction = new Action<string>(value =>
             {

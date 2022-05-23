@@ -17,9 +17,6 @@ namespace TabExtension.UI
 {
     public class TabLayout : MonoBehaviour
     {
-
-        private static readonly int TabsPerRow = 7;
-
         public static TabLayout Instance;
 
         private GameObject quickMenu;
@@ -141,7 +138,7 @@ namespace TabExtension.UI
             }
 
             int pivotX = 0;
-
+            int TabsPerRow = Configuration.TabsPerRow.Value;
             for (int i = 0; i < childs.Count; i++)
             {
                 int y = i / TabsPerRow;
