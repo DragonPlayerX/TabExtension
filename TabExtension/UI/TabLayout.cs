@@ -17,9 +17,6 @@ namespace TabExtension.UI
 {
     public class TabLayout : MonoBehaviour
     {
-
-        private static readonly int TabsPerRow = 7;
-
         public static TabLayout Instance;
 
         private GameObject quickMenu;
@@ -61,6 +58,8 @@ namespace TabExtension.UI
                 }
             });
 
+            Configuration.TabsPerRow.OnValueChanged += new Action<int, int>((oldValue, newValue) => MelonCoroutines.Start(RecalculateLayout()));
+
             quickMenu = GameObject.Find("UserInterface").transform.Find("Canvas_QuickMenu(Clone)").gameObject;
             layout = quickMenu.transform.Find("Container/Window/Page_Buttons_QM/HorizontalLayoutGroup").gameObject;
             tooltipRect = quickMenu.transform.Find("Container/Window/ToolTipPanel").GetComponent<RectTransform>();
@@ -76,11 +75,29 @@ namespace TabExtension.UI
                 useStyletor = true;
                 StyleElement styleElement = background.GetComponent<StyleElement>();
                 styleElement.field_Public_String_1 = "TabBottom";
-            }
 
-            Image image = background.GetComponent<Image>();
-            image.sprite = transform.Find("Page_Dashboard/Background").GetComponent<Image>().sprite;
-            image.color = new Color(1, 1, 1, 0.6f);
+                TabExtensionMod.Logger.Msg("Found Styletor. Style tag was applied to the tab background.");
+            }
+            else
+            {
+                Sprite tabSprite = null;
+                StyleEngine styleEngine = quickMenu.GetComponent<StyleEngine>();
+                Il2CppSystem.Collections.Generic.List<StyleResource.Resource> resources = styleEngine.field_Public_StyleResource_0.resources;
+                for (int i = 0; i < resources.Count; i++)
+                {
+                    if (resources[i].obj.name.Equals("Page_Tab_Backdrop") && resources[i].obj.GetIl2CppType() == UnhollowerRuntimeLib.Il2CppType.Of<Sprite>())
+                        tabSprite = resources[i].obj.Cast<Sprite>();
+                }
+
+                if (tabSprite != null)
+                    TabExtensionMod.Logger.Msg("Found sprite: " + tabSprite.name);
+                else
+                    TabExtensionMod.Logger.Warning("Unable to find the Page_Tab_Backdrop sprite.");
+
+                Image image = background.GetComponent<Image>();
+                image.sprite = tabSprite;
+                image.color = new Color(1, 1, 1, 0.8f);
+            }
 
             backgroundRect = background.GetComponent<RectTransform>();
             backgroundRect.anchoredPosition = new Vector2(0, -64);
@@ -124,9 +141,6 @@ namespace TabExtension.UI
                     if (child.gameObject.name != "Background_QM_PagePanel")
                         child.gameObject.AddComponent<LayoutListener>();
                 }
-
-                if (useStyletor)
-                    MelonCoroutines.Start(UpdateBackgroundLater());
             }
 
             List<Transform> childs = new List<Transform>();
@@ -144,17 +158,17 @@ namespace TabExtension.UI
 
             for (int i = 0; i < childs.Count; i++)
             {
-                int y = i / TabsPerRow;
-                int x = i - (y * TabsPerRow);
+                int y = i / Configuration.TabsPerRow.Value;
+                int x = i - (y * Configuration.TabsPerRow.Value);
 
                 if (x == 0)
                 {
                     if (Configuration.ParsedTabAlignment == Configuration.Alignment.Left)
-                        pivotX = -(TabsPerRow * 64 - (TabsPerRow % 2 * 64));
+                        pivotX = -(Configuration.TabsPerRow.DefaultValue * 64 - (Configuration.TabsPerRow.DefaultValue % 2 * 64));
                     else if (Configuration.ParsedTabAlignment == Configuration.Alignment.Right)
-                        pivotX = TabsPerRow * 64 + (TabsPerRow % 2 * 64) - (((childs.Count - i) >= TabsPerRow ? TabsPerRow : (childs.Count - i)) * 128);
+                        pivotX = Configuration.TabsPerRow.DefaultValue * 64 + (Configuration.TabsPerRow.DefaultValue % 2 * 64) - (((childs.Count - i) >= Configuration.TabsPerRow.Value ? Configuration.TabsPerRow.Value : (childs.Count - i)) * 128);
                     else
-                        pivotX = -(((childs.Count - i) >= TabsPerRow ? TabsPerRow : (childs.Count - i)) * 64) + 64;
+                        pivotX = -(((childs.Count - i) >= Configuration.TabsPerRow.Value ? Configuration.TabsPerRow.Value : (childs.Count - i)) * 64) + 64;
                 }
 
                 if (childs.Count > i)
@@ -165,12 +179,21 @@ namespace TabExtension.UI
                 }
             }
 
-            menuCollider.size = new Vector3(900, 128 + (childs.Count - 1) / TabsPerRow * 128, 1);
-            menuCollider.center = new Vector3(0, -64 - (childs.Count - 1) / TabsPerRow * 64, 0);
-            tooltipRect.anchoredPosition = new Vector2(0, -140 - ((childs.Count - 1) / TabsPerRow * 128));
+            int backgroundPivotX = 0;
+            if (Configuration.ParsedTabAlignment == Configuration.Alignment.Left)
+                backgroundPivotX -= (Configuration.TabsPerRow.DefaultValue - Configuration.TabsPerRow.Value) * 64;
+            else if (Configuration.ParsedTabAlignment == Configuration.Alignment.Right)
+                backgroundPivotX += (Configuration.TabsPerRow.DefaultValue - Configuration.TabsPerRow.Value) * 64;
+
+            backgroundRect.anchoredPosition = new Vector2(backgroundPivotX, -64);
+            backgroundRect.sizeDelta = new Vector2(Configuration.TabsPerRow.Value * 128 + 54, 128);
+
+            menuCollider.size = new Vector3(900, 128 + (childs.Count - 1) / Configuration.TabsPerRow.Value * 128, 1);
+            menuCollider.center = new Vector3(0, -64 - (childs.Count - 1) / Configuration.TabsPerRow.Value * 64, 0);
+            tooltipRect.anchoredPosition = new Vector2(0, -140 - ((childs.Count - 1) / Configuration.TabsPerRow.Value * 128));
 
             foreach (RectTransform transform in uixObjects)
-                transform.anchoredPosition = new Vector2(transform.anchoredPosition.x, -((childs.Count - 1) / TabsPerRow * (128 / 3)));
+                transform.anchoredPosition = new Vector2(transform.anchoredPosition.x, -((childs.Count - 1) / Configuration.TabsPerRow.Value * (128 / 3)));
 
             if (useStyletor)
             {
@@ -260,14 +283,6 @@ namespace TabExtension.UI
             T obj = array[index];
             array[index] = array[newIndex];
             array[newIndex] = obj;
-        }
-
-        [method: HideFromIl2Cpp]
-        private IEnumerator UpdateBackgroundLater()
-        {
-            yield return new WaitForSeconds(5);
-            backgroundRect.anchoredPosition = new Vector2(0, -64);
-            backgroundRect.sizeDelta = new Vector2(950, 128);
         }
     }
 }

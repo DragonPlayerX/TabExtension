@@ -6,7 +6,6 @@ namespace TabExtension.UI
 {
     public class LayoutListener : MonoBehaviour
     {
-
         private bool lastState;
 
         public LayoutListener(IntPtr value) : base(value) { }

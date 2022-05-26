@@ -15,7 +15,6 @@ namespace TabExtension
 {
     public class TabExtensionMod : MelonMod
     {
-
         public static readonly string Version = "1.2.1";
 
         public static TabExtensionMod Instance { get; private set; }
